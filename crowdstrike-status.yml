@@ -1,36 +1,33 @@
 ---
-- name: Collect CrowdStrike information
-  hosts: all
+- name: Run CrowdStrike commands
+  hosts: falcon_servers
   become: true
   gather_facts: false
 
   tasks:
-    - name: Falcon service status
-      ansible.builtin.command: systemctl status falcon-sensor
+    - name: Get falcon-sensor service status
+      ansible.builtin.shell: systemctl status falcon-sensor
       register: falcon_status
       changed_when: false
-      failed_when: false
 
-    - name: Falcon version
+    - name: Get Falcon version
       ansible.builtin.command: /opt/crowdstrike/falconctl -g --version
       register: falcon_version
       changed_when: false
-      failed_when: false
 
-    - name: Falcon RFM state
+    - name: Get Falcon RFM state
       ansible.builtin.command: /opt/crowdstrike/falconctl -g --rfm-state
       register: falcon_rfm
       changed_when: false
-      failed_when: false
 
-    - name: Display Falcon service status
+    - name: Print service status
       ansible.builtin.debug:
-        var: falcon_status.stdout_lines
+        msg: "{{ falcon_status.stdout }}"
 
-    - name: Display Falcon version
+    - name: Print Falcon version
       ansible.builtin.debug:
-        var: falcon_version.stdout_lines
+        msg: "{{ falcon_version.stdout }}"
 
-    - name: Display Falcon RFM state
+    - name: Print Falcon RFM state
       ansible.builtin.debug:
-        var: falcon_rfm.stdout_lines
+        msg: "{{ falcon_rfm.stdout }}"
