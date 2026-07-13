@@ -1,0 +1,35 @@
+---
+- name: Collect Falcon Sensor information
+  hosts: all
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: Get ir_agent service status
+      ansible.builtin.command:
+        cmd: systemctl status ir_agent
+      register: ir_agent_status
+      changed_when: false
+      failed_when: false
+
+    - name: Get Falcon Sensor version
+      ansible.builtin.command:
+        cmd: /opt/crowdstrike/falconctl -g --version
+      register: falcon_version
+      changed_when: false
+      failed_when: false
+
+    - name: Get Falcon RFM state
+      ansible.builtin.command:
+        cmd: /opt/crowdstrike/falconctl -g --rfm-state
+      register: falcon_rfm
+      changed_when: false
+      failed_when: false
+
+    - name: Display results
+      ansible.builtin.debug:
+        msg:
+          - "===== {{ inventory_hostname }} ====="
+          - "{{ ir_agent_status.stdout }}"
+          - "{{ falcon_version.stdout }}"
+          - "{{ falcon_rfm.stdout }}"
