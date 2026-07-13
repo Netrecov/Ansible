@@ -1,0 +1,44 @@
+---
+- name: Install CrowdStrike Falcon Sensor
+  hosts: all
+  become: true
+  gather_facts: false
+
+  vars:
+    rpm_name: "falcon-sensor-7.01.0-15604.el8.x86_64.rpm"
+    falcon_url: "https://servername/software/CrowdStrikeSensor/Linux/RHEL%208/{{ rpm_name }}"
+    falcon_rpm: "/home/{{ ansible_user }}/Downloads/{{ rpm_name }}"
+    falcon_cid: "YOUR_CID_HERE"
+
+  tasks:
+    - name: Download Falcon Sensor RPM
+      ansible.builtin.get_url:
+        url: "{{ falcon_url }}"
+        dest: "{{ falcon_rpm }}"
+        validate_certs: false
+        mode: "0644"
+
+    - name: Install Falcon Sensor RPM
+      ansible.builtin.yum:
+        name: "{{ falcon_rpm }}"
+        state: present
+
+    - name: Configure Falcon CID
+      ansible.builtin.command:
+        cmd: /opt/crowdstrike/falconctl -s --cid={{ falcon_cid }}
+
+    - name: Enable and start Falcon Sensor
+      ansible.builtin.systemd:
+        name: falcon-sensor
+        enabled: true
+        state: started
+
+    - name: Verify Falcon Sensor process
+      ansible.builtin.command:
+        cmd: ps -e
+      register: ps_output
+      changed_when: false
+
+    - name: Show Falcon process
+      ansible.builtin.debug:
+        msg: "{{ ps_output.stdout_lines | select('search', 'falcon-sensor') | list }}"
