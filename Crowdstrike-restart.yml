@@ -1,6 +1,6 @@
 ---
 - name: Restart CrowdStrike Falcon Sensor
-  hosts: falcon_servers
+  hosts: all
   become: true
   gather_facts: false
 
