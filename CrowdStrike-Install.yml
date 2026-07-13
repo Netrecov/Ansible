@@ -19,9 +19,8 @@
         mode: "0644"
 
     - name: Install Falcon Sensor RPM
-      ansible.builtin.yum:
-        name: "{{ falcon_rpm }}"
-        state: present
+      ansible.builtin.command:
+        cmd: yum install {{ flacon_rpm }} -y
 
     - name: Configure Falcon CID
       ansible.builtin.command:
