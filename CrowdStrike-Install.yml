@@ -24,7 +24,7 @@
 
     - name: Configure Falcon CID
       ansible.builtin.command:
-        cmd: /opt/crowdstrike/falconctl -s --cid={{ falcon_cid }}
+        cmd: /opt/CrowdStrike/falconctl -s --cid={{ falcon_cid }}
 
     - name: Enable and start Falcon Sensor
       ansible.builtin.systemd:
