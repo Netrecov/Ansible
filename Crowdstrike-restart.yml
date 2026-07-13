@@ -1,0 +1,26 @@
+---
+- name: Restart CrowdStrike Falcon Sensor
+  hosts: falcon_servers
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: Restart falcon-sensor service
+      ansible.builtin.systemd:
+        name: falcon-sensor
+        state: restarted
+
+    - name: Ensure falcon-sensor is running
+      ansible.builtin.systemd:
+        name: falcon-sensor
+        state: started
+        enabled: true
+
+    - name: Check service status
+      ansible.builtin.command: systemctl is-active falcon-sensor
+      register: falcon_status
+      changed_when: false
+
+    - name: Display status
+      ansible.builtin.debug:
+        msg: "{{ inventory_hostname }}: falcon-sensor is {{ falcon_status.stdout }}"
