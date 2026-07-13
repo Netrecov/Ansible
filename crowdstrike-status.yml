@@ -1,6 +1,6 @@
 ---
 - name: Run CrowdStrike commands
-  hosts: falcon_servers
+  hosts: all
   become: true
   gather_facts: false
 
@@ -11,12 +11,12 @@
       changed_when: false
 
     - name: Get Falcon version
-      ansible.builtin.command: /opt/crowdstrike/falconctl -g --version
+      ansible.builtin.command: /opt/CrowdStrike/falconctl -g --version
       register: falcon_version
       changed_when: false
 
     - name: Get Falcon RFM state
-      ansible.builtin.command: /opt/crowdstrike/falconctl -g --rfm-state
+      ansible.builtin.command: /opt/CrowdStrike/falconctl -g --rfm-state
       register: falcon_rfm
       changed_when: false
 
