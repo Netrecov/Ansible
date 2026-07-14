@@ -1,0 +1,15 @@
+---
+- name: Clear SSSD cache and restart services
+  hosts: all
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: Clear SSSD cache
+      ansible.builtin.command: sudo sss_cache -E
+
+    - name: Restart SSSD
+      ansible.builtin.command: sudo systemctl restart sssd
+
+    - name: Restart SSHD
+      ansible.builtin.command: sudo systemctl restart sshd
