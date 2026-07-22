@@ -1,0 +1,64 @@
+---
+- name: Windows Software Installation
+  hosts: windows
+  gather_facts: false
+
+  tasks:
+
+    - name: Set timezone
+      ansible.windows.win_powershell:
+        script: |
+          Set-TimeZone -Name "Eastern Standard Time" -PassThru
+      register: timezone_result
+
+    - debug:
+        var: timezone_result.output
+
+
+    - name: Install Software 1
+      ansible.windows.win_powershell:
+        script: |
+          Set-Location "\\pathtosoftware\installer"
+
+          & ".\installername.exe"
+
+          Write-Output "Exit Code: $LASTEXITCODE"
+      register: installer1_result
+
+    - debug:
+        var: installer1_result.output
+
+
+    - name: Install Software 2
+      ansible.windows.win_powershell:
+        script: |
+          Set-Location "\\pathtosoftware2\installer"
+
+          msiexec /i installername.msi /l*v C:\Temp\installer2.log /quiet customtoken=tokenid
+
+          Write-Output "Exit Code: $LASTEXITCODE"
+      register: installer2_result
+
+    - debug:
+        var: installer2_result.output
+
+
+    - name: Install Software 3
+      ansible.windows.win_powershell:
+        script: |
+          Set-Location "\\pathtosoftware3\installer"
+
+          Set-ExecutionPolicy Unrestricted -Scope Process -Force
+
+          $proc = Start-Process msiexec `
+            -ArgumentList '/i','installername.msi','PROPERTY=value','/qn' `
+            -Wait `
+            -PassThru
+
+          Write-Output "Exit Code: $($proc.ExitCode)"
+
+          Set-ExecutionPolicy RemoteSigned -Scope Process -Force
+      register: installer3_result
+
+    - debug:
+        var: installer3_result.output
